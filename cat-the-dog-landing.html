@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cat the Dog — Children's Animated Series</title>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #c8dff0;
+    --sky-light: #e8f4fc;
+    --gold: #f5c842;
+    --orange: #f4873a;
+    --rust: #c96b2a;
+    --brown: #5a3a1a;
+    --green-sage: #9ab87a;
+    --green-deep: #6a9a50;
+    --cream: #fdf6e8;
+    --warm-white: #fffdf6;
+    --text-dark: #3a2a10;
+    --bee-yellow: #f5c842;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Ubuntu', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* === FLOATING ELEMENTS === */
+  .floaties {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .leaf {
+    position: absolute;
+    font-size: 1.4rem;
+    opacity: 0.55;
+    animation: leafFloat linear infinite;
+  }
+
+  @keyframes leafFloat {
+    0% { transform: translateY(-40px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.55; }
+    90% { opacity: 0.55; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  .bee {
+    position: absolute;
+    font-size: 1.6rem;
+    animation: beeFly ease-in-out infinite;
+    opacity: 0.7;
+  }
+
+  @keyframes beeFly {
+    0%   { transform: translate(0, 0) rotate(-5deg); }
+    25%  { transform: translate(30px, -20px) rotate(5deg); }
+    50%  { transform: translate(-10px, -35px) rotate(-3deg); }
+    75%  { transform: translate(20px, -15px) rotate(4deg); }
+    100% { transform: translate(0, 0) rotate(-5deg); }
+  }
+
+  /* === HERO === */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    background-image: url('./Cat_the_Dog_-_Background.png');
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  /* Subtle overlay so text stays readable over the illustrated background */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(200,223,240,0.35) 0%,
+      rgba(255,252,240,0.10) 50%,
+      rgba(180,210,150,0.15) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grass tufts */
+  .grass-tuft {
+    position: absolute;
+    bottom: 18%;
+    font-size: 1.8rem;
+    opacity: 0.6;
+    animation: grassSway 3s ease-in-out infinite alternate;
+  }
+  @keyframes grassSway {
+    from { transform: rotate(-4deg); }
+    to   { transform: rotate(4deg);  }
+  }
+
+  .logo-banner,
+  .cat-hero-wrap,
+  .tagline-wrap,
+  .scroll-hint {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* === LOGO BANNER === */
+  .logo-banner {
+    position: relative;
+    z-index: 10;
+    margin-top: 4vh;
+    text-align: center;
+    animation: dropIn 0.8s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes dropIn {
+    from { transform: translateY(-60px) scale(0.8); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .logo-img {
+    width: clamp(280px, 55vw, 620px);
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    /* knock out the white background so it floats over the illustrated scene */
+    mix-blend-mode: multiply;
+    filter: drop-shadow(2px 4px 8px rgba(90,58,26,0.18));
+  }
+
+  /* Cat illustration */
+  .cat-hero-wrap {
+    position: relative;
+    z-index: 10;
+    margin-top: 2vh;
+    animation: floatDog 4s ease-in-out infinite;
+    filter: drop-shadow(0 20px 30px rgba(90,58,26,0.25));
+  }
+  @keyframes floatDog {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-14px); }
+  }
+
+  .cat-hero-wrap img {
+    height: clamp(260px, 45vh, 420px);
+    width: auto;
+    display: block;
+  }
+
+  /* Tagline */
+  .tagline-wrap {
+    position: relative;
+    z-index: 10;
+    margin-top: 1vh;
+    text-align: center;
+    padding: 0 1rem;
+    animation: fadeUp 1s 0.4s both;
+  }
+  @keyframes fadeUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  .tagline {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: clamp(1.2rem, 3.5vw, 2rem);
+    font-weight: 700;
+    color: var(--brown);
+    background: rgba(255,255,255,0.65);
+    border-radius: 50px;
+    padding: 0.4em 1.4em;
+    border: 3px solid rgba(244,135,58,0.3);
+    display: inline-block;
+    box-shadow: 0 4px 20px rgba(200,130,40,0.15);
+  }
+
+  .cta-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, var(--orange), var(--rust));
+    border: none;
+    border-radius: 50px;
+    padding: 0.7em 2em;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 6px 0 var(--rust), 0 10px 30px rgba(244,135,58,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+    animation: fadeUp 1s 0.7s both;
+  }
+  .cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 0 var(--rust), 0 15px 35px rgba(244,135,58,0.45);
+  }
+  .cta-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 4px 0 var(--rust), 0 6px 20px rgba(244,135,58,0.35);
+  }
+
+  /* Scroll arrow */
+  .scroll-hint {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    font-size: 2rem;
+    animation: bounce 1.5s ease-in-out infinite;
+    opacity: 0.6;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+  }
+
+  /* === SECTIONS === */
+  section {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Wavy divider */
+  .wave-divider {
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    margin-top: -2px;
+  }
+  .wave-divider svg {
+    display: block;
+    width: 100%;
+  }
+
+  /* === ABOUT STRIP === */
+  .about-strip {
+    background: var(--warm-white);
+    padding: 4rem 2rem 5rem;
+    text-align: center;
+  }
+
+  .section-eyebrow {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: var(--brown);
+    margin-bottom: 1.2rem;
+    line-height: 1.15;
+  }
+
+  .section-body {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    font-weight: 600;
+    color: #6a5030;
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Cards */
+  .cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card {
+    background: var(--cream);
+    border-radius: 24px;
+    padding: 2rem 1.6rem;
+    width: clamp(200px, 28%, 280px);
+    border: 3px solid rgba(244,135,58,0.2);
+    box-shadow: 0 6px 30px rgba(200,130,40,0.1);
+    transition: transform 0.25s, box-shadow 0.25s;
+    text-align: center;
+  }
+  .card:hover {
+    transform: translateY(-8px) rotate(-1deg);
+    box-shadow: 0 14px 40px rgba(200,130,40,0.2);
+  }
+
+  .card-emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.8rem;
+    animation: wiggle 3s ease-in-out infinite;
+  }
+  @keyframes wiggle {
+    0%, 90%, 100% { transform: rotate(0deg); }
+    92% { transform: rotate(-10deg); }
+    96% { transform: rotate(10deg); }
+  }
+
+  .card-title {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--brown);
+    margin-bottom: 0.4rem;
+  }
+
+  .card-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #7a5a30;
+    line-height: 1.5;
+  }
+
+  /* === MEET CAT === */
+  .meet-cat {
+    background: linear-gradient(135deg, #fff8ed 0%, #ffecd0 100%);
+    padding: 5rem 2rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .meet-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3rem;
+    justify-content: center;
+  }
+
+  .meet-img-wrap {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  .meet-img-wrap img {
+    height: clamp(220px, 35vh, 340px);
+    width: auto;
+    filter: drop-shadow(0 15px 25px rgba(90,58,26,0.2));
+    animation: floatDog 4.5s ease-in-out infinite 0.5s;
+  }
+
+  /* Paw print trail */
+  .paw-trail {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  .paw-trail span {
+    font-size: 1.1rem;
+    opacity: 0;
+    animation: pawAppear 2s ease-in-out infinite;
+  }
+  .paw-trail span:nth-child(1) { animation-delay: 0s; }
+  .paw-trail span:nth-child(2) { animation-delay: 0.3s; }
+  .paw-trail span:nth-child(3) { animation-delay: 0.6s; }
+  .paw-trail span:nth-child(4) { animation-delay: 0.9s; }
+  @keyframes pawAppear {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 0.7; transform: scale(1); }
+  }
+
+  .meet-text {
+    flex: 1 1 300px;
+    text-align: left;
+  }
+
+  .fun-fact-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--brown);
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.25em 1em;
+    border-radius: 50px;
+    margin-bottom: 0.8rem;
+    box-shadow: 0 3px 0 var(--rust);
+  }
+
+  .trait-list {
+    list-style: none;
+    margin-top: 1.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .trait-list li {
+    background: rgba(255,255,255,0.7);
+    border: 2px solid rgba(244,135,58,0.3);
+    border-radius: 50px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--rust);
+    padding: 0.2em 0.9em;
+  }
+
+  /* === EPISODES TEASER === */
+  .episodes {
+    background: linear-gradient(180deg, #e8f5d8 0%, #d4ebb8 100%);
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+
+  .episode-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.4rem;
+    margin-top: 2.5rem;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ep-card {
+    background: var(--warm-white);
+    border-radius: 22px;
+    width: clamp(180px, 26%, 250px);
+    overflow: hidden;
+    border: 3px solid rgba(106,154,80,0.25);
+    box-shadow: 0 5px 25px rgba(100,150,60,0.12);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .ep-card:hover {
+    transform: translateY(-10px) rotate(1deg);
+    box-shadow: 0 18px 40px rgba(100,150,60,0.2);
+  }
+
+  .ep-thumb {
+    background: linear-gradient(135deg, var(--sky) 0%, #d4e8f8 100%);
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .ep-thumb::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 35px;
+    background: linear-gradient(0deg, #b8d498, transparent);
+  }
+
+  .ep-body {
+    padding: 1rem 1.2rem 1.4rem;
+  }
+
+  .ep-number {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--green-deep);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .ep-title {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--brown);
+    margin: 0.2rem 0;
+    line-height: 1.3;
+  }
+
+  .ep-lesson {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #7a8a60;
+    margin-top: 0.3rem;
+  }
+
+  .ep-coming {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--orange);
+    letter-spacing: 1px;
+    margin-top: 0.6rem;
+    display: block;
+  }
+
+  /* === SUBSCRIBE === */
+  .subscribe-section {
+    background: linear-gradient(135deg, var(--orange) 0%, #e85a10 100%);
+    padding: 5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .subscribe-section::before {
+    content: '🐾';
+    position: absolute;
+    font-size: 12rem;
+    opacity: 0.06;
+    top: -2rem;
+    left: -2rem;
+    transform: rotate(-25deg);
+  }
+  .subscribe-section::after {
+    content: '🐾';
+    position: absolute;
+    font-size: 10rem;
+    opacity: 0.06;
+    bottom: -1rem;
+    right: -1rem;
+    transform: rotate(20deg);
+  }
+
+  .subscribe-section .section-title {
+    color: #fff;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  }
+  .subscribe-section .section-body {
+    color: rgba(255,255,255,0.9);
+  }
+
+  .yt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 2rem;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    font-weight: 800;
+    color: var(--orange);
+    background: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75em 2em;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.15), 0 12px 30px rgba(0,0,0,0.2);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .yt-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 0 rgba(0,0,0,0.15), 0 18px 35px rgba(0,0,0,0.25);
+  }
+  .yt-btn svg { flex-shrink: 0; }
+
+  /* Stars scatter */
+  .star-scatter {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    color: rgba(255,255,255,0.5);
+    font-size: 1.2rem;
+    animation: twinkle 2s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.2; transform: scale(0.8); }
+    to   { opacity: 0.8; transform: scale(1.2); }
+  }
+
+  /* === FOOTER === */
+  footer {
+    background: var(--brown);
+    color: rgba(255,255,255,0.75);
+    text-align: center;
+    padding: 2.5rem 2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  footer .footer-logo {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* === SCROLL REVEAL === */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 600px) {
+    .meet-text { text-align: center; }
+    .trait-list { justify-content: center; }
+    .card { width: clamp(150px, 85%, 300px); }
+    .ep-card { width: clamp(160px, 80%, 280px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating background elements -->
+<div class="floaties" aria-hidden="true">
+  <span class="leaf" style="left:8%;animation-duration:9s;animation-delay:0s;font-size:1.2rem;">🍂</span>
+  <span class="leaf" style="left:22%;animation-duration:12s;animation-delay:2s;">🍁</span>
+  <span class="leaf" style="left:40%;animation-duration:10s;animation-delay:4s;font-size:1rem;">🍃</span>
+  <span class="leaf" style="left:60%;animation-duration:14s;animation-delay:1s;">🍂</span>
+  <span class="leaf" style="left:75%;animation-duration:11s;animation-delay:3s;font-size:1.1rem;">🍁</span>
+  <span class="leaf" style="left:90%;animation-duration:8s;animation-delay:5s;font-size:0.9rem;">🍃</span>
+  <span class="bee" style="left:15%;top:25%;animation-duration:6s;animation-delay:0s;">🐝</span>
+  <span class="bee" style="left:70%;top:35%;animation-duration:7s;animation-delay:2s;">🐝</span>
+  <span class="bee" style="left:50%;top:60%;animation-duration:5.5s;animation-delay:1s;">🐝</span>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <!-- Logo -->
+  <div class="logo-banner">
+    <img src="./Cat_the_Dog_-_Words.png" alt="Cat the Dog" class="logo-img">
+  </div>
+
+  <!-- Dog image -->
+  <div class="cat-hero-wrap">
+    <img src="./Baby_Cat_-_No_Frame_or_Background.png" alt="Cat the Dog — Catalina, a happy Australian Shepherd">
+  </div>
+
+  <!-- Tagline + CTA -->
+  <div class="tagline-wrap">
+    <p class="tagline">🐾 She's a dog named Cat — and she's full of adventures! 🐾</p>
+    <a class="cta-btn" href="#episodes">Watch Episodes ▶</a>
+  </div>
+
+  <div class="scroll-hint" aria-hidden="true">👇</div>
+</section>
+
+<!-- Wave break -->
+<div class="wave-divider">
+  <svg viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,70 L0,70 Z" fill="#fffdf6"/>
+  </svg>
+</div>
+
+<!-- ===== ABOUT ===== -->
+<section class="about-strip">
+  <div class="reveal">
+    <p class="section-eyebrow">✨ A Show for Little Ones ✨</p>
+    <h2 class="section-title">Stories full of giggles,<br>heart, and paw prints!</h2>
+    <p class="section-body">
+      Every episode of <strong>Cat the Dog</strong> follows Catalina — the most curious, fluffy, wonderful Australian Shepherd — as she goes on gentle adventures, learns big lessons, and proves that being yourself is always the very best thing. 🐾
+    </p>
+  </div>
+
+  <div class="cards-row">
+    <div class="card reveal">
+      <span class="card-emoji">🎵</span>
+      <p class="card-title">Sing Along!</p>
+      <p class="card-text">Every episode ends with a fun recap song. Get ready to wiggle and sing!</p>
+    </div>
+    <div class="card reveal" style="transition-delay:0.15s">
+      <span class="card-emoji" style="animation-delay:0.3s">💛</span>
+      <p class="card-title">Big Lessons</p>
+      <p class="card-text">Kindness, sharing, bravery — Cat shows us one big lesson every episode.</p>
+    </div>
+    <div class="card reveal" style="transition-delay:0.3s">
+      <span class="card-emoji" style="animation-delay:0.6s">🌟</span>
+      <p class="card-title">Always Happy!</p>
+      <p class="card-text">No scary stuff — just warm, fun stories with cozy endings every time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Wave break -->
+<div class="wave-divider" style="background:#fffdf6">
+  <svg viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,30 C360,70 720,0 1080,40 C1260,60 1380,20 1440,30 L1440,70 L0,70 Z" fill="#fff8ed"/>
+  </svg>
+</div>
+
+<!-- ===== MEET CAT ===== -->
+<section class="meet-cat">
+  <div class="meet-inner">
+    <div class="meet-img-wrap reveal">
+      <img src="./Baby_Cat_-_No_Frame_or_Background.png" alt="Catalina the Australian Shepherd">
+      <div class="paw-trail" aria-hidden="true">
+        <span>🐾</span><span>🐾</span><span>🐾</span><span>🐾</span>
+      </div>
+    </div>
+
+    <div class="meet-text reveal" style="transition-delay:0.2s">
+      <span class="fun-fact-badge">⭐ Fun Fact!</span>
+      <h2 class="section-title" style="text-align:left">Meet Catalina —<br>we call her Cat! 🐶</h2>
+      <p class="section-body" style="text-align:left;margin:0">
+        Yep, she's a dog… named Cat! Catalina is a real Australian Shepherd who loves her family, her yard, and making brand-new friends. She's brave, she's silly, and she always finds a way to make things right.
+      </p>
+      <ul class="trait-list">
+        <li>🌀 Super Curious</li>
+        <li>⚡ Full of Energy</li>
+        <li>💛 Super Sweet</li>
+        <li>🦁 Really Brave</li>
+        <li>🤝 Great Friend</li>
+        <li>😄 Very Silly</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Wave break -->
+<div class="wave-divider" style="background:#fff8ed">
+  <svg viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,50 C200,20 400,70 600,40 C800,10 1000,60 1200,35 C1320,20 1400,50 1440,50 L1440,70 L0,70 Z" fill="#e8f5d8"/>
+  </svg>
+</div>
+
+<!-- ===== EPISODES ===== -->
+<section class="episodes" id="episodes">
+  <div class="reveal">
+    <p class="section-eyebrow">📺 Coming Soon</p>
+    <h2 class="section-title">Cat's Adventures Await!</h2>
+    <p class="section-body">New episodes dropping soon. Subscribe so you never miss Cat's next big adventure!</p>
+  </div>
+
+  <div class="episode-cards">
+    <div class="ep-card reveal">
+      <div class="ep-thumb">🌟</div>
+      <div class="ep-body">
+        <p class="ep-number">Season 1 · Episode 1</p>
+        <p class="ep-title">Meet Cat the Dog!</p>
+        <p class="ep-lesson">Lesson: Being Yourself</p>
+        <span class="ep-coming">▶ Coming Soon!</span>
+      </div>
+    </div>
+    <div class="ep-card reveal" style="transition-delay:0.15s">
+      <div class="ep-thumb">🌈</div>
+      <div class="ep-body">
+        <p class="ep-number">Season 1 · Episode 2</p>
+        <p class="ep-title">Cat Makes a Friend</p>
+        <p class="ep-lesson">Lesson: Friendship</p>
+        <span class="ep-coming">▶ Coming Soon!</span>
+      </div>
+    </div>
+    <div class="ep-card reveal" style="transition-delay:0.3s">
+      <div class="ep-thumb">🍂</div>
+      <div class="ep-body">
+        <p class="ep-number">Season 1 · Episode 3</p>
+        <p class="ep-title">Cat's Big Leaf Pile</p>
+        <p class="ep-lesson">Lesson: Sharing</p>
+        <span class="ep-coming">▶ Coming Soon!</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Wave break -->
+<div class="wave-divider" style="background:#e8f5d8">
+  <svg viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,20 C180,60 360,10 540,40 C720,70 900,20 1080,45 C1200,60 1340,25 1440,20 L1440,70 L0,70 Z" fill="#f4873a"/>
+  </svg>
+</div>
+
+<!-- ===== SUBSCRIBE ===== -->
+<section class="subscribe-section">
+  <div class="star-scatter" aria-hidden="true">
+    <span class="star" style="left:10%;top:20%;animation-delay:0s">✦</span>
+    <span class="star" style="left:25%;top:70%;animation-delay:0.4s">★</span>
+    <span class="star" style="left:60%;top:15%;animation-delay:0.8s">✦</span>
+    <span class="star" style="left:80%;top:60%;animation-delay:0.2s">★</span>
+    <span class="star" style="left:45%;top:80%;animation-delay:1s">✦</span>
+  </div>
+
+  <div class="reveal">
+    <p class="section-eyebrow" style="color:rgba(255,255,255,0.8)">🐾 Don't Miss a Single Woof! 🐾</p>
+    <h2 class="section-title">Subscribe to Cat the Dog!</h2>
+    <p class="section-body">Hit subscribe and ring the bell 🔔 so you and your little ones always know when Cat has a brand new adventure ready!</p>
+
+    <a class="yt-btn" href="https://youtube.com" target="_blank" rel="noopener">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="8" fill="#FF0000"/>
+        <path d="M22.5 9.5C22.5 9.5 22.3 8.3 21.7 7.7C21 7 20.2 7 19.9 6.9C17.8 6.8 14 6.8 14 6.8C14 6.8 10.2 6.8 8.1 6.9C7.8 6.9 7 7 6.3 7.7C5.7 8.3 5.5 9.5 5.5 9.5C5.5 9.5 5.3 10.9 5.3 12.3V13.7C5.3 15.1 5.5 16.5 5.5 16.5C5.5 16.5 5.7 17.7 6.3 18.3C7 19 7.9 18.9 8.3 19C9.7 19.1 14 19.2 14 19.2C14 19.2 17.8 19.2 19.9 19C20.2 19 21 18.9 21.7 18.3C22.3 17.7 22.5 16.5 22.5 16.5C22.5 16.5 22.7 15.1 22.7 13.7V12.3C22.7 10.9 22.5 9.5 22.5 9.5ZM12 16.5V11.5L17 14L12 16.5Z" fill="white"/>
+      </svg>
+      Subscribe on YouTube!
+    </a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <span class="footer-logo">🐾 Cat the Dog</span>
+  <p>A children's animated series for ages 3–7.</p>
+  <p style="margin-top:0.5rem">Made with lots of love for Catalina 🐶 &nbsp;|&nbsp; <a href="#">YouTube</a> &nbsp;|&nbsp; <a href="#">Contact</a></p>
+  <p style="margin-top:1rem;font-size:0.78rem;opacity:0.55;">© 2026 Cat the Dog. All rights reserved. Content is made for kids.</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Gentle parallax on hero dog
+  const dogWrap = document.querySelector('.cat-hero-wrap');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (dogWrap) dogWrap.style.transform = `translateY(${y * 0.12}px)`;
+  });
+</script>
+</body>
+</html>
